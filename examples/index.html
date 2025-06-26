@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VortexTable - 虚拟滚动示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #table-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <h1>VortexTable - 虚拟滚动示例</h1> -->
+        <div id="table-container"></div>
+    </div>
+
+    <script type="module">
+        import { VortexTable } from '/src/index.ts';
+
+        const dataLoader = async (startIndex, endIndex) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const fetchedData = [];
+            for (let i = startIndex; i <= endIndex; i++) {
+                const index = i;
+                if (index >= 1000000) break; // Ensure we don't go beyond total rows
+                
+                fetchedData.push({
+                    id: index + 1,
+                    data: {
+                        id: index + 1,
+                        name: `User ${index + 1}`,
+                        age: Math.floor(Math.random() * 60) + 1,
+                        email: `user${index + 1}@example.com`,
+                        city: `City ${index % 50}`,
+                        phone: `1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+                    }
+                });
+            }
+            return fetchedData;
+        };
+
+        // 列配置
+        const columns = [
+            { id: 'id', key: 'id', title: 'ID', width: 80, type: 'number', align: 'center', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false },
+            { id: 'name', key: 'name', title: '姓名', width: 120, type: 'text', align: 'left', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false },
+            { id: 'age', key: 'age', title: '年龄', width: 80, type: 'number', align: 'center', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false },
+            { id: 'city', key: 'city', title: '城市', width: 120, type: 'text', align: 'left', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false },
+            { id: 'email', key: 'email', title: '邮箱', width: 200, type: 'text', align: 'left', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false },
+            { id: 'phone', key: 'phone', title: '电话', width: 150, type: 'text', align: 'left', sortable: true, filterable: true, resizable: true, frozen: false, hidden: false }
+        ];
+
+        // 创建表格实例
+        const container = document.getElementById('table-container');
+        const table = new VortexTable(container, {
+            width: 800,
+            height: 1000,
+            rowHeight: 35,
+            showHeader: true,
+            showGrid: true,
+            columns: columns,
+            virtualScroll: {
+                enabled: true,
+                bufferSize: 10 // 上下各缓冲10行
+            },
+            theme: {
+                backgroundColor: '#ffffff',
+                borderColor: '#e0e0e0',
+                textColor: '#333333',
+                headerBackgroundColor: '#f8f9fa',
+                headerTextColor: '#495057',
+                selectionColor: 'rgba(0, 123, 255, 0.3)',
+                hoverColor: 'rgba(0, 123, 255, 0.1)',
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 14
+            }
+        });
+
+        // 设置数据加载器
+        table.setDataLoader(dataLoader);
+
+        // 设置总行数
+        table.setTotalRows(1000000);
+
+        // Listen for events using the public 'on' method
+        // table.on('cell-click', (detail) => {
+        //     console.log('Cell clicked:', detail);
+        // });
+
+        // table.on('selection-change', (detail) => {
+        //     console.log('Selection changed:', detail);
+        // });
+
+        // 全局函数
+        // window.scrollToRandom = async () => {
+        //     const randomIndex = Math.floor(Math.random() * 1000000);
+        //     await table.scrollToIndex(randomIndex);
+        // };
+
+        // window.scrollToEnd = async () => {
+        //     await table.scrollToIndex(999999);
+        // };
+
+        // window.clearCache = () => {
+        //     // 这里需要添加清空缓存的方法
+        // };
+
+        // window.showStats = () => {
+        //     const stats = document.getElementById('stats');
+        //     const totalRows = document.getElementById('total-rows');
+        //     const cachedRows = document.getElementById('cached-rows');
+        //     const visibleRows = document.getElementById('visible-rows');
+        //     const memoryUsage = document.getElementById('memory-usage');
+
+        //     const virtualInfo = table.getVirtualScrollInfo();
+        //     const cachedCount = table.getCachedDataCount();
+
+        //     totalRows.textContent = '1,000,000';
+        //     cachedRows.textContent = cachedCount.toLocaleString();
+        //     visibleRows.textContent = virtualInfo ? (virtualInfo.endIndex - virtualInfo.startIndex + 1) : '0';
+            
+        //     // 估算内存占用（每行约1KB）
+        //     const estimatedMemory = Math.round(cachedCount * 1);
+        //     memoryUsage.textContent = `${estimatedMemory} KB`;
+
+        //     stats.style.display = 'flex';
+        // };
+
+        // // 定期更新统计信息
+        // setInterval(() => {
+        //     if (document.getElementById('stats').style.display === 'flex') {
+        //         window.showStats();
+        //     }
+        // }, 2000);
+    </script>
+</body>
+</html> 
